@@ -13,14 +13,30 @@ export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div ref={containerRef} className="relative w-full bg-[#0B0F19] text-slate-50 font-sans overflow-x-hidden">
+    <div ref={containerRef} className="relative w-full bg-[#050505] text-slate-50 font-sans overflow-x-hidden">
       {/* Fixed Orange Border Frame */}
       <div className="fixed inset-0 border-[12px] md:border-[20px] border-[#FF5A00] z-50 pointer-events-none"></div>
+
+      {/* PREMIUM BACKGROUND (Z-0) */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {/* Radial Gradient Spotlight */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,90,0,0.06)_0%,rgba(5,5,5,0)_60%)]"></div>
+        
+        {/* Fine Grid Texture */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.03]">
+          <defs>
+            <pattern id="premium-grid" width="60" height="60" patternUnits="userSpaceOnUse">
+              <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#FFFFFF" strokeWidth="1" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#premium-grid)" />
+        </svg>
+      </div>
 
       {/* BACKGROUND SCROLLING LAYER (Z-0) */}
       <div className="absolute top-0 left-0 w-full z-0">
         <section className="h-screen flex items-center justify-center overflow-hidden">
-          <h1 className="text-[24vw] font-oswald font-bold text-[#1E293B] leading-none tracking-[-0.05em] select-none transform scale-y-110 uppercase">
+          <h1 className="text-[24vw] font-oswald font-bold text-white/10 leading-none tracking-[-0.05em] select-none transform scale-y-110 uppercase">
             STRIKE
           </h1>
         </section>
@@ -98,7 +114,7 @@ export default function App() {
         </section>
 
         {/* Section 2: Texture */}
-        <section className="min-h-screen flex flex-col justify-center items-end text-right w-full max-w-7xl mx-auto px-8 md:px-24 pointer-events-auto">
+        <section className="min-h-screen flex flex-col justify-center items-start text-left w-full max-w-7xl mx-auto px-8 md:px-24 pointer-events-auto">
           <div className="w-full md:w-1/2">
             <h2 className="text-4xl md:text-6xl font-oswald font-bold tracking-[-0.02em] mb-6 leading-tight uppercase">
               Aderência <br />
@@ -111,15 +127,55 @@ export default function App() {
         </section>
 
         {/* Section 3: Aerodynamics */}
-        <section className="min-h-screen flex flex-col justify-center items-start w-full max-w-7xl mx-auto px-8 md:px-24 pointer-events-auto">
-          <div className="w-full md:w-1/2">
-            <h2 className="text-4xl md:text-6xl font-oswald font-bold tracking-[-0.02em] mb-6 leading-tight uppercase">
-              Vôo Estável. <br />
-              <span className="text-[#FF5A00]">Cortes Letais.</span>
+        <section className="min-h-screen flex flex-col justify-center items-end text-right w-full max-w-7xl mx-auto px-8 md:px-24 pointer-events-auto">
+          <div className="w-full md:w-1/2 flex flex-col items-end z-10">
+            
+            {/* Top Badge */}
+            <div className="border border-slate-600 rounded-full px-4 py-1 mb-6">
+              <span className="text-[10px] md:text-xs font-sans font-semibold tracking-widest uppercase text-slate-300">AERODINÂMICA</span>
+            </div>
+
+            {/* Main Heading */}
+            <h2 className="text-7xl md:text-[7rem] lg:text-[8.5rem] font-oswald font-bold tracking-[-0.02em] leading-[0.85] uppercase flex flex-col items-end mb-10">
+              <span className="text-white">TRAJETÓRIA</span>
+              <span className="text-[#FF5A00]">ESTÁVEL</span>
             </h2>
-            <p className="text-lg md:text-xl font-sans font-normal text-slate-400 mb-8">
-              Design inovador de 8 painéis fundidos termicamente. Reduz a turbulência do ar, garantindo uma trajetória previsível e indefensável.
-            </p>
+
+            {/* Metrics Group */}
+            <div className="flex flex-col items-end w-full mb-10 gap-6">
+              {/* Metric 1 */}
+              <div className="relative flex items-center justify-end w-full">
+                <div className="absolute right-[3rem] md:right-[3.5rem] bottom-3 w-[200%] border-b border-dashed border-slate-700/70 z-[-1]"></div>
+                <div className="flex flex-col items-end mr-5 bg-[#050505] pl-4">
+                  <span className="text-4xl md:text-5xl font-sans font-bold text-white leading-none">18</span>
+                  <span className="text-[10px] md:text-xs font-sans font-semibold text-slate-400 tracking-widest uppercase mt-1">PAINÉIS AERODINÂMICOS</span>
+                </div>
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full border border-slate-700 flex items-center justify-center bg-[#050505]">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                </div>
+              </div>
+              
+              {/* Metric 2 */}
+              <div className="relative flex items-center justify-end w-full">
+                <div className="absolute right-[3rem] md:right-[3.5rem] bottom-3 w-[200%] border-b border-dashed border-slate-700/70 z-[-1]"></div>
+                <div className="flex flex-col items-end mr-5 bg-[#050505] pl-4">
+                  <span className="text-4xl md:text-5xl font-sans font-bold text-white leading-none">32.000</span>
+                  <span className="text-[10px] md:text-xs font-sans font-semibold text-slate-400 tracking-widest uppercase mt-1">MICRO-COVAS</span>
+                </div>
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-full border border-slate-700 flex items-center justify-center bg-[#050505]">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Text */}
+            <div className="relative w-full md:w-4/5 flex flex-col items-end mt-2">
+              <div className="absolute right-0 bottom-[-1rem] w-[200%] border-b border-dashed border-slate-700/70 z-[-1]"></div>
+              <p className="text-sm md:text-base font-sans font-normal text-slate-400 text-right leading-relaxed bg-[#050505] pl-4 pb-2">
+                Distribuição de peso perfeitamente balanceada e design de painéis otimizado garantem um voo sem oscilações, permitindo saques e ataques com precisão milimétrica.
+              </p>
+            </div>
+
           </div>
         </section>
 

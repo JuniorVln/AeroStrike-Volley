@@ -165,7 +165,7 @@ export default function Scene({ containerRef }: { containerRef: React.RefObject<
 
     // Section 1 to 2 (Hero -> Texture)
     tl.to(ballRef.current.position, {
-      x: -2.5,
+      x: 2.5,
       z: 0, 
       ease: "power2.inOut"
     }, 0)
@@ -183,7 +183,7 @@ export default function Scene({ containerRef }: { containerRef: React.RefObject<
 
     // Section 2 to 3 (Texture -> Aero)
     tl.to(ballRef.current.position, {
-      x: 2.5,
+      x: -2.5,
       z: 0, 
       ease: "power2.inOut"
     }, 1)
