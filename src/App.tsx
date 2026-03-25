@@ -151,7 +151,7 @@ export default function App() {
       />
 
       {/* Fixed Orange Border Frame */}
-      <div className="fixed inset-0 border-[12px] md:border-[20px] border-[#FF5A00] rounded-[22px] md:rounded-[34px] z-50 pointer-events-none"></div>
+      <div className="fixed inset-0 border-[8px] md:border-[20px] border-[#FF5A00] rounded-[16px] md:rounded-[34px] z-50 pointer-events-none"></div>
 
       {/* PREMIUM BACKGROUND (Z-0) */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -171,7 +171,7 @@ export default function App() {
 
       {/* BACKGROUND SCROLLING LAYER (Z-0) */}
       <div className="absolute top-0 left-0 w-full z-0">
-        <section className="h-screen flex items-center justify-center overflow-hidden">
+        <section className="h-[100svh] md:h-screen flex items-center justify-center overflow-hidden">
           <h1 className="text-[24vw] font-oswald font-bold text-white/10 leading-none tracking-[-0.05em] select-none transform scale-y-110 uppercase">
             STRIKE
           </h1>
@@ -187,10 +187,10 @@ export default function App() {
 
       {/* SECTION 4 RADAR BACKGROUND (Z-8) - scrolls with page, sits below 3D canvas */}
       <div className="absolute top-0 left-0 w-full z-[8] pointer-events-none">
-        <div className="h-screen" />
-        <div className="min-h-screen" />
-        <div className="min-h-screen" />
-        <div className="h-screen relative overflow-hidden">
+        <div className="h-[100svh] md:h-screen" />
+        <div className="min-h-[100svh] md:min-h-screen" />
+        <div className="min-h-[100svh] md:min-h-screen" />
+        <div className="h-[100svh] md:h-screen relative overflow-hidden">
           <svg
             viewBox="-720 -405 1440 810"
             preserveAspectRatio="xMidYMid slice"
@@ -237,21 +237,21 @@ export default function App() {
       {/* SECTION 5 PODIUM BACKGROUND (Z-8) - scrolls with page, sits below 3D canvas */}
       <div className="absolute top-0 left-0 w-full z-[8] pointer-events-none">
         {/* Spacer for sections 1-4 */}
-        <div className="h-screen" />
-        <div className="min-h-screen" />
-        <div className="min-h-screen" />
-        <div className="h-screen" />
+        <div className="h-[100svh] md:h-screen" />
+        <div className="min-h-[100svh] md:min-h-screen" />
+        <div className="min-h-[100svh] md:min-h-screen" />
+        <div className="h-[100svh] md:h-screen" />
         {/* Section 5 — podium behind ball */}
-        <div className="h-screen relative">
+        <div className="h-[100svh] md:h-screen relative">
           <div
-            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center"
-            style={{ bottom: '-9vh', width: '100%' }}
+            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center bottom-[-4vh] md:bottom-[-9vh]"
+            style={{ width: '100%' }}
           >
             {/* === TOP CYLINDER === */}
-            <div style={{ width: '28vw', position: 'relative', zIndex: 3 }}>
+            <div style={{ width: 'clamp(170px, 28vw, 520px)', position: 'relative', zIndex: 3 }}>
               <div style={{
                 width: '100%',
-                height: '3.5vw',
+                height: 'clamp(20px, 3.5vw, 68px)',
                 borderRadius: '50%',
                 background: 'radial-gradient(ellipse at 50% 50%, #2a2a2a 0%, #1a1a1a 60%, #111 100%)',
                 position: 'relative',
@@ -261,8 +261,8 @@ export default function App() {
               }} />
               <div style={{
                 width: '100%',
-                height: '12vh',
-                marginTop: '-1.75vw',
+                height: 'clamp(56px, 12vh, 140px)',
+                marginTop: 'calc(clamp(20px, 3.5vw, 68px) / -2)',
                 background: 'linear-gradient(90deg, #080808 0%, #1e1e1e 15%, #2a2a2a 30%, #1a1a1a 50%, #2a2a2a 70%, #1e1e1e 85%, #080808 100%)',
                 borderLeft: '1px solid rgba(255,255,255,0.06)',
                 borderRight: '1px solid rgba(255,255,255,0.06)',
@@ -278,19 +278,19 @@ export default function App() {
               </div>
               <div style={{
                 width: '100%',
-                height: '3.5vw',
+                height: 'clamp(20px, 3.5vw, 68px)',
                 borderRadius: '50%',
                 background: '#0a0a0a',
-                marginTop: '-1.75vw',
+                marginTop: 'calc(clamp(20px, 3.5vw, 68px) / -2)',
                 position: 'relative',
                 zIndex: 1,
               }} />
             </div>
             {/* === MIDDLE CYLINDER === */}
-            <div style={{ width: '48vw', marginTop: '-2.5vw', position: 'relative', zIndex: 2 }}>
+            <div style={{ width: 'clamp(250px, 48vw, 920px)', marginTop: 'calc(clamp(28px, 4.5vw, 88px) * -0.55)', position: 'relative', zIndex: 2 }}>
               <div style={{
                 width: '100%',
-                height: '4.5vw',
+                height: 'clamp(28px, 4.5vw, 88px)',
                 borderRadius: '50%',
                 background: 'radial-gradient(ellipse at 50% 40%, #1e1e1e 0%, #141414 50%, #0c0c0c 100%)',
                 position: 'relative',
@@ -299,8 +299,8 @@ export default function App() {
               }} />
               <div style={{
                 width: '100%',
-                height: '10vh',
-                marginTop: '-2.25vw',
+                height: 'clamp(52px, 10vh, 120px)',
+                marginTop: 'calc(clamp(28px, 4.5vw, 88px) / -2)',
                 background: 'linear-gradient(90deg, #050505 0%, #141414 12%, #1c1c1c 28%, #151515 50%, #1c1c1c 72%, #141414 88%, #050505 100%)',
                 position: 'relative',
                 overflow: 'hidden',
@@ -314,10 +314,10 @@ export default function App() {
               </div>
               <div style={{
                 width: '100%',
-                height: '4.5vw',
+                height: 'clamp(28px, 4.5vw, 88px)',
                 borderRadius: '50%',
                 background: '#060606',
-                marginTop: '-2.25vw',
+                marginTop: 'calc(clamp(28px, 4.5vw, 88px) / -2)',
               }} />
             </div>
           </div>
@@ -325,7 +325,7 @@ export default function App() {
       </div>
 
       {/* FIXED 3D CANVAS (Z-10) */}
-      <div ref={canvasContainerRef} className="fixed top-0 left-0 w-full h-screen z-10 pointer-events-none">
+      <div ref={canvasContainerRef} className="fixed top-0 left-0 w-full h-[100svh] md:h-screen z-10 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
           <Suspense fallback={null}>
             <Scene containerRef={containerRef} section5Ref={section5Ref} section6Ref={section6Ref} />
@@ -336,12 +336,12 @@ export default function App() {
       {/* FOREGROUND SCROLLING LAYER (Z-20) */}
       <div className="relative z-20 w-full pointer-events-none">
         {/* Section 1: Hero */}
-        <section className="h-screen w-full relative">
+        <section className="h-[100svh] md:h-screen w-full relative">
           {/* Header */}
-          <header data-reveal="up" className="absolute top-0 left-0 w-full p-8 md:p-12 flex justify-between items-center pointer-events-auto">
+          <header data-reveal="up" className="absolute top-0 left-0 w-full p-5 md:p-12 flex justify-between items-center pointer-events-auto">
             <div className="flex items-center gap-3">
-              <CircleDashed className="w-8 h-8 md:w-10 md:h-10" />
-              <div className="font-oswald font-bold text-lg md:text-xl leading-none uppercase tracking-[-0.02em]">
+              <CircleDashed className="w-7 h-7 md:w-10 md:h-10" />
+              <div className="font-oswald font-bold text-base md:text-xl leading-none uppercase tracking-[-0.02em]">
                 Aero<br/>Strike
               </div>
             </div>
@@ -350,7 +350,7 @@ export default function App() {
               <a href="#" className="hover:text-white transition-colors">Personalizar</a>
               <a href="#" className="hover:text-white transition-colors">Contato</a>
             </nav>
-            <div className="flex gap-6">
+            <div className="flex gap-4 md:gap-6">
               <User className="w-5 h-5 md:w-6 md:h-6 cursor-pointer hover:text-[#FF5A00] transition-colors" />
               <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 cursor-pointer hover:text-[#FF5A00] transition-colors" />
             </div>
@@ -359,15 +359,15 @@ export default function App() {
           {/* Eyebrow */}
           <div
             data-reveal="up"
-            className="absolute top-[20%] left-1/2 -translate-x-1/2"
+            className="absolute top-[16%] md:top-[20%] left-0 right-0 flex justify-center text-center"
           >
-            <span className="text-[10px] font-sans font-semibold tracking-[0.3em] uppercase text-slate-300 whitespace-nowrap">
+            <span className="text-[9px] md:text-[10px] font-sans font-semibold tracking-[0.2em] md:tracking-[0.3em] uppercase text-slate-300 whitespace-nowrap">
               Bola de Voley Profissional
             </span>
           </div>
 
           {/* Promo Video */}
-          <div className="absolute left-8 md:left-12 top-1/2 -translate-y-1/2 flex items-center gap-4 pointer-events-auto cursor-pointer group">
+          <div className="hidden md:flex absolute left-8 md:left-12 top-1/2 -translate-y-1/2 items-center gap-4 pointer-events-auto cursor-pointer group">
             <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-slate-600 flex items-center justify-center group-hover:border-[#FF5A00] transition-colors">
               <Play className="w-4 h-4 md:w-5 md:h-5 fill-current group-hover:text-[#FF5A00] transition-colors ml-1" />
             </div>
@@ -375,22 +375,22 @@ export default function App() {
           </div>
 
           {/* Price & Size */}
-          <div data-reveal="left" className="absolute bottom-12 md:bottom-16 left-8 md:left-12 pointer-events-auto">
-            <div className="text-3xl md:text-5xl font-sans font-bold text-[#FF5A00] mb-2 tracking-tight">R$ 599,90</div>
-            <div className="text-xs font-sans font-medium text-slate-400 tracking-widest uppercase">
+          <div data-reveal="left" className="absolute bottom-28 md:bottom-16 left-5 md:left-12 pointer-events-auto">
+            <div className="text-[2.6rem] md:text-5xl font-sans font-bold text-[#FF5A00] mb-2 tracking-tight">R$ 599,90</div>
+            <div className="text-[11px] md:text-xs font-sans font-medium text-slate-400 tracking-widest uppercase">
               Tamanho: <span className="text-white font-bold">65cm</span> • Oficial
             </div>
           </div>
 
           {/* Add to Cart */}
-          <div className="absolute bottom-12 md:bottom-16 left-1/2 -translate-x-1/2 pointer-events-auto">
-            <button className="bg-[#FF5A00] text-white px-8 py-4 md:px-16 md:py-5 font-sans font-bold tracking-widest uppercase hover:bg-[#ff7326] transition-colors shadow-[0_0_20px_rgba(255,90,0,0.3)] text-sm md:text-base">
+          <div className="absolute bottom-8 md:bottom-16 left-1/2 -translate-x-1/2 pointer-events-auto w-[calc(100%-40px)] md:w-auto">
+            <button className="w-full bg-[#FF5A00] text-white px-8 py-4 md:px-16 md:py-5 font-sans font-bold tracking-[0.12em] md:tracking-widest uppercase hover:bg-[#ff7326] transition-colors shadow-[0_0_20px_rgba(255,90,0,0.3)] text-sm md:text-base">
               Adicionar ao Carrinho
             </button>
           </div>
 
           {/* Arrows */}
-          <div data-reveal="right" className="absolute bottom-12 md:bottom-16 right-8 md:right-12 flex gap-4 pointer-events-auto">
+          <div data-reveal="right" className="hidden md:flex absolute bottom-12 md:bottom-16 right-8 md:right-12 gap-4 pointer-events-auto">
             <button className="w-12 h-12 md:w-14 md:h-14 rounded-full border border-slate-600 flex items-center justify-center hover:border-white transition-colors">
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -406,43 +406,43 @@ export default function App() {
         </section>
 
         {/* Section 2: Texture */}
-        <section className="min-h-screen flex flex-col justify-center items-start text-left w-full max-w-7xl mx-auto px-8 md:px-24 pointer-events-auto">
+        <section className="min-h-[100svh] md:min-h-screen flex flex-col justify-center items-start text-left w-full max-w-7xl mx-auto px-5 md:px-24 py-24 md:py-0 pointer-events-auto">
           <div data-reveal="left" className="w-full md:w-1/2 flex flex-col items-start">
 
             {/* Top Badge */}
-            <div className="border border-slate-600 rounded-full px-4 py-1 mb-8">
+            <div className="border border-slate-600 rounded-full px-3 md:px-4 py-1 mb-6 md:mb-8">
               <span className="text-[10px] md:text-xs font-sans font-semibold tracking-widest uppercase text-slate-300">MÉTRICAS DE PERFORMANCE</span>
             </div>
 
             {/* Main Heading */}
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-oswald font-bold tracking-[-0.02em] leading-[0.9] uppercase flex flex-col items-start mb-10">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-oswald font-bold tracking-[-0.02em] leading-[0.9] uppercase flex flex-col items-start mb-8 md:mb-10">
               <span className="text-white">ADERÊNCIA</span>
               <span className="text-white">ABSOLUTA</span>
             </h2>
 
             {/* Metrics Group */}
-            <div className="flex flex-col items-start w-full mb-8 gap-7">
+            <div className="flex flex-col items-start w-full mb-8 gap-6 md:gap-7">
               {/* Metric 1 */}
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-3 md:gap-4">
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-slate-700 flex items-center justify-center shrink-0 mt-1">
                   <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="text-3xl md:text-4xl font-sans font-bold text-white leading-none">32K</span>
+                  <span className="text-2xl md:text-4xl font-sans font-bold text-white leading-none">32K</span>
                   <span className="text-[10px] md:text-xs font-sans font-semibold text-slate-400 tracking-widest uppercase mt-1 mb-2">PONTOS DE MICRO-TEXTURA</span>
-                  <p className="text-sm font-sans font-normal text-slate-500 leading-relaxed max-w-xs">Superfície otimizada com 32.000 micro-covas, projetada para absorção de suor e máxima tração durante o toque.</p>
+                  <p className="text-xs md:text-sm font-sans font-normal text-slate-500 leading-relaxed max-w-xs">Superfície otimizada com 32.000 micro-covas, projetada para absorção de suor e máxima tração durante o toque.</p>
                 </div>
               </div>
 
               {/* Metric 2 */}
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-3 md:gap-4">
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-slate-700 flex items-center justify-center shrink-0 mt-1">
                   <div className="w-2 h-2 bg-white rounded-full"></div>
                 </div>
                 <div className="flex flex-col items-start">
-                  <span className="text-3xl md:text-4xl font-sans font-bold text-white leading-none">100%</span>
+                  <span className="text-2xl md:text-4xl font-sans font-bold text-white leading-none">100%</span>
                   <span className="text-[10px] md:text-xs font-sans font-semibold text-slate-400 tracking-widest uppercase mt-1 mb-2">MICROFIBRA PREMIUM</span>
-                  <p className="text-sm font-sans font-normal text-slate-500 leading-relaxed max-w-xs">Material sintético de nível profissional que garante levantamentos milimétricos e controle excepcional de rotação.</p>
+                  <p className="text-xs md:text-sm font-sans font-normal text-slate-500 leading-relaxed max-w-xs">Material sintético de nível profissional que garante levantamentos milimétricos e controle excepcional de rotação.</p>
                 </div>
               </div>
             </div>
@@ -451,26 +451,26 @@ export default function App() {
         </section>
 
         {/* Section 3: Aerodynamics */}
-        <section className="min-h-screen flex flex-col justify-center items-end text-right w-full max-w-7xl mx-auto px-8 md:px-24 pointer-events-auto">
+        <section className="min-h-[100svh] md:min-h-screen flex flex-col justify-center items-end text-right w-full max-w-7xl mx-auto px-5 md:px-24 py-24 md:py-0 pointer-events-auto">
           <div data-reveal="right" className="w-full md:w-1/2 flex flex-col items-end">
 
             {/* Top Badge */}
-            <div className="border border-slate-600 rounded-full px-4 py-1 mb-8">
+            <div className="border border-slate-600 rounded-full px-3 md:px-4 py-1 mb-6 md:mb-8">
               <span className="text-[10px] md:text-xs font-sans font-semibold tracking-widest uppercase text-slate-300">AERODINÂMICA</span>
             </div>
 
             {/* Main Heading */}
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-oswald font-bold tracking-[-0.02em] leading-[0.9] uppercase flex flex-col items-end mb-10">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-oswald font-bold tracking-[-0.02em] leading-[0.9] uppercase flex flex-col items-end mb-8 md:mb-10">
               <span className="text-white">TRAJETÓRIA</span>
               <span className="text-[#FF5A00]">ESTÁVEL</span>
             </h2>
 
             {/* Metrics Group */}
-            <div className="flex flex-col items-end w-full mb-8 gap-5">
+            <div className="flex flex-col items-end w-full mb-8 gap-4 md:gap-5">
               {/* Metric 1 */}
-              <div className="flex items-center justify-end gap-4">
+              <div className="flex items-center justify-end gap-3 md:gap-4">
                 <div className="flex flex-col items-end">
-                  <span className="text-3xl md:text-4xl font-sans font-bold text-white leading-none">18</span>
+                  <span className="text-2xl md:text-4xl font-sans font-bold text-white leading-none">18</span>
                   <span className="text-[10px] md:text-xs font-sans font-semibold text-slate-400 tracking-widest uppercase mt-1">PAINÉIS AERODINÂMICOS</span>
                 </div>
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-slate-700 flex items-center justify-center shrink-0">
@@ -479,9 +479,9 @@ export default function App() {
               </div>
 
               {/* Metric 2 */}
-              <div className="flex items-center justify-end gap-4">
+              <div className="flex items-center justify-end gap-3 md:gap-4">
                 <div className="flex flex-col items-end">
-                  <span className="text-3xl md:text-4xl font-sans font-bold text-white leading-none">32.000</span>
+                  <span className="text-2xl md:text-4xl font-sans font-bold text-white leading-none">32.000</span>
                   <span className="text-[10px] md:text-xs font-sans font-semibold text-slate-400 tracking-widest uppercase mt-1">MICRO-COVAS</span>
                 </div>
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-slate-700 flex items-center justify-center shrink-0">
@@ -491,7 +491,7 @@ export default function App() {
             </div>
 
             {/* Footer Text */}
-            <p className="text-sm md:text-base font-sans font-normal text-slate-400 text-right leading-relaxed w-full md:w-4/5">
+            <p className="text-xs md:text-base font-sans font-normal text-slate-400 text-right leading-relaxed w-full md:w-4/5">
               Distribuição de peso perfeitamente balanceada e design de painéis otimizado garantem um voo sem oscilações, permitindo saques e ataques com precisão milimétrica.
             </p>
 
@@ -499,10 +499,10 @@ export default function App() {
         </section>
 
         {/* Section 4: Technical Spec / Radar - text labels only (radar SVG is on z-[8] layer below ball) */}
-        <section className="h-screen relative w-full overflow-hidden pointer-events-none" id="section4">
+        <section className="h-[100svh] md:h-screen relative w-full overflow-hidden pointer-events-none" id="section4">
 
           {/* Top-left: MICRO-TEXTURA + metric */}
-          <div data-reveal="left" className="absolute left-[8%] top-[28%] text-left">
+          <div data-reveal="left" className="hidden md:block absolute left-[8%] top-[28%] text-left">
             <div className="text-[11px] font-sans font-semibold text-slate-500 tracking-widest uppercase mb-2">MICRO-TEXTURA</div>
             <div className="flex items-center gap-3">
               <div className="w-px h-12 bg-white/70"></div>
@@ -514,22 +514,22 @@ export default function App() {
           </div>
 
           {/* Center-left: PRESSÃO — aligned with MICRO-TEXTURA (left-[8%]) */}
-          <div className="absolute left-[8%] top-1/2 -translate-y-1/2 text-left">
+          <div className="hidden md:block absolute left-[8%] top-1/2 -translate-y-1/2 text-left">
             <div data-reveal="left" className="text-[9px] font-sans font-semibold text-slate-500 tracking-widest uppercase">PRESSÃO: 0.30 kPa</div>
           </div>
 
           {/* Center-right: ROTAÇÃO — aligned with Alta-Aderência bar (right-[8%]) */}
-          <div className="absolute right-[8%] top-1/2 -translate-y-1/2 text-right">
+          <div className="hidden md:block absolute right-[8%] top-1/2 -translate-y-1/2 text-right">
             <div data-reveal="right" className="text-[9px] font-sans font-semibold text-slate-500 tracking-widest uppercase">ROTAÇÃO: 18 rpm</div>
           </div>
 
           {/* Bottom-center: PROFUNDIDADE */}
-          <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 text-center">
+          <div className="hidden md:block absolute bottom-[20%] left-1/2 -translate-x-1/2 text-center">
             <div data-reveal="up" className="text-[9px] font-sans font-semibold text-slate-500 tracking-widest uppercase">PROFUNDIDADE DO CANAL</div>
           </div>
 
           {/* Bottom-right: Alta-Aderência */}
-          <div data-reveal="right" className="absolute right-[8%] bottom-[30%] text-right">
+          <div data-reveal="right" className="hidden md:block absolute right-[8%] bottom-[30%] text-right">
             <div className="flex items-center justify-end gap-3">
               <div>
                 <div className="text-3xl font-sans font-bold text-white leading-none">Alta-Aderência</div>
@@ -543,15 +543,39 @@ export default function App() {
             </div>
           </div>
 
+          <div className="md:hidden absolute left-5 right-5 bottom-10 border border-slate-700/80 rounded-xl p-4 backdrop-blur-[1px] bg-black/35">
+            <div className="text-[10px] font-sans font-semibold tracking-widest uppercase text-slate-500 mb-3">
+              Spec. Técnica
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-[11px] font-sans text-slate-300">
+              <div>
+                <div className="text-slate-500 uppercase text-[9px] tracking-widest mb-1">Pressão</div>
+                <div>0.30 kPa</div>
+              </div>
+              <div>
+                <div className="text-slate-500 uppercase text-[9px] tracking-widest mb-1">Rotação</div>
+                <div>18 rpm</div>
+              </div>
+              <div>
+                <div className="text-slate-500 uppercase text-[9px] tracking-widest mb-1">Micro-Textura</div>
+                <div>32K pontos</div>
+              </div>
+              <div>
+                <div className="text-slate-500 uppercase text-[9px] tracking-widest mb-1">Aderência</div>
+                <div>Alta</div>
+              </div>
+            </div>
+          </div>
+
         </section>
         {/* Section 5: The Champion */}
         <section
           ref={section5Ref}
-          className="h-screen relative w-full overflow-hidden pointer-events-none"
+          className="h-[100svh] md:h-screen relative w-full overflow-hidden pointer-events-none"
         >
           {/* Title block */}
-          <div className="absolute top-14 md:top-20 left-1/2 -translate-x-1/2 text-center z-10 whitespace-nowrap">
-            <p data-reveal="up" className="text-[10px] font-sans font-semibold tracking-[0.5em] uppercase text-slate-500 mb-3">
+          <div className="absolute top-12 md:top-20 left-1/2 -translate-x-1/2 text-center z-10 md:whitespace-nowrap">
+            <p data-reveal="up" className="text-[9px] md:text-[10px] font-sans font-semibold tracking-[0.25em] md:tracking-[0.5em] uppercase text-slate-500 mb-3">
               EDIÇÃO LIMITADA
             </p>
             <h2 data-reveal="up" className="text-[11vw] md:text-[8vw] font-oswald font-bold uppercase leading-none tracking-tight text-white">
@@ -560,7 +584,7 @@ export default function App() {
           </div>
 
           {/* Left stat */}
-          <div className="absolute left-[8%] top-1/2 -translate-y-1/2 text-left">
+          <div className="hidden md:block absolute left-[8%] top-1/2 -translate-y-1/2 text-left">
             <div data-reveal="left">
               <div className="text-[10px] font-sans font-semibold text-[#FF5A00] tracking-widest uppercase mb-3">
                 NÍVEL 01
@@ -574,7 +598,7 @@ export default function App() {
           </div>
 
           {/* Right stat */}
-          <div className="absolute right-[8%] top-1/2 -translate-y-1/2 text-right">
+          <div className="hidden md:block absolute right-[8%] top-1/2 -translate-y-1/2 text-right">
             <div data-reveal="right">
               <div className="text-[10px] font-sans font-semibold text-[#FF5A00] tracking-widest uppercase mb-3">
                 CERTIFICADA
@@ -587,18 +611,31 @@ export default function App() {
             </div>
           </div>
 
+          <div className="md:hidden absolute left-5 right-5 bottom-12 space-y-3">
+            <div className="border border-slate-700/80 rounded-xl p-4 bg-black/35">
+              <div className="text-[10px] font-sans font-semibold text-[#FF5A00] tracking-widest uppercase mb-2">Nível 01</div>
+              <div className="text-xl font-sans font-bold text-white">Classe Elite</div>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">Projetada para o mais alto nível de competição.</p>
+            </div>
+            <div className="border border-slate-700/80 rounded-xl p-4 bg-black/35 text-right">
+              <div className="text-[10px] font-sans font-semibold text-[#FF5A00] tracking-widest uppercase mb-2">Certificada</div>
+              <div className="text-xl font-sans font-bold text-white">Padrão Ouro</div>
+              <p className="text-xs text-slate-400 mt-2 leading-relaxed">Atende todas as exigências oficiais de peso e tamanho.</p>
+            </div>
+          </div>
+
         </section>
         {/* Section 6: Defy Gravity — CTA final */}
         <section
           ref={section6Ref}
-          className="h-screen relative w-full overflow-hidden pointer-events-none"
+          className="h-[100svh] md:h-screen relative w-full overflow-hidden pointer-events-none"
         >
 
           {/* === MAIN TEXT === */}
-          <div className="absolute top-[12%] left-1/2 -translate-x-1/2 text-center w-full flex flex-col items-center">
+          <div className="absolute top-[8%] md:top-[12%] left-1/2 -translate-x-1/2 text-center w-full flex flex-col items-center px-5 md:px-0">
             {/* Badge */}
-            <div data-reveal="up" className="inline-flex items-center border border-[#FF5A00]/60 rounded-full px-6 py-[7px] mb-10">
-              <span className="text-[9px] font-sans font-semibold tracking-[0.5em] uppercase text-[#FF5A00]">
+            <div data-reveal="up" className="inline-flex items-center border border-[#FF5A00]/60 rounded-full px-4 md:px-6 py-[6px] md:py-[7px] mb-6 md:mb-10">
+              <span className="text-[8px] md:text-[9px] font-sans font-semibold tracking-[0.22em] md:tracking-[0.5em] uppercase text-[#FF5A00]">
                 PERFORMANCE DO PRÓXIMO NÍVEL
               </span>
             </div>
@@ -620,7 +657,7 @@ export default function App() {
             </div>
             {/* Subtitle */}
             <div className="w-12 h-px bg-slate-700 mt-8 mb-6" />
-            <p data-reveal="up" className="text-xs md:text-sm font-sans text-slate-500 tracking-wide max-w-md leading-relaxed">
+            <p data-reveal="up" className="text-xs md:text-sm font-sans text-slate-500 tracking-wide max-w-[300px] md:max-w-md leading-relaxed">
               Engenharia de precisão para atletas que não aceitam limites.
             </p>
           </div>
@@ -630,8 +667,8 @@ export default function App() {
             {/* Divider */}
             <div className="w-full h-px bg-slate-800" />
             {/* Footer info row */}
-            <div className="flex items-center justify-between px-8 md:px-16 h-[56px]">
-              <div className="flex items-center gap-5 text-[10px] font-sans font-semibold tracking-widest uppercase text-slate-500">
+            <div className="flex flex-col md:flex-row items-center md:justify-between px-5 md:px-16 py-3 md:h-[56px] gap-2 md:gap-0">
+              <div className="flex flex-wrap justify-center md:justify-start items-center gap-3 md:gap-5 text-[9px] md:text-[10px] font-sans font-semibold tracking-widest uppercase text-slate-500">
                 <span className="flex items-center gap-2">
                   <span className="w-[6px] h-[6px] rounded-full bg-[#FF5A00] shrink-0" />
                   LOJA OFICIAL
@@ -642,33 +679,33 @@ export default function App() {
                   ENVIO MUNDIAL
                 </span>
               </div>
-              <div className="flex items-center gap-5 text-slate-600">
+              <div className="flex items-center gap-4 md:gap-5 text-slate-600">
                 <Twitter className="w-4 h-4 hover:text-white transition-colors cursor-pointer" />
                 <CircleDashed className="w-4 h-4 hover:text-white transition-colors cursor-pointer" />
                 <Youtube className="w-4 h-4 hover:text-white transition-colors cursor-pointer" />
               </div>
-              <div className="text-[10px] font-sans font-semibold tracking-widest uppercase text-slate-500">
+              <div className="text-[9px] md:text-[10px] font-sans font-semibold tracking-widest uppercase text-slate-500">
                 COMPRA SEGURA
               </div>
             </div>
             {/* Divider */}
             <div className="w-full h-px bg-slate-800" />
             {/* CTA */}
-            <div className="flex items-center justify-center py-12 md:py-14">
-              <button className="bg-white text-black px-16 md:px-24 py-5 font-oswald font-bold text-xl md:text-2xl uppercase tracking-widest hover:bg-slate-100 transition-colors">
+            <div className="flex items-center justify-center py-6 md:py-14">
+              <button className="w-[calc(100%-40px)] md:w-auto bg-white text-black px-10 md:px-24 py-4 md:py-5 font-oswald font-bold text-lg md:text-2xl uppercase tracking-[0.12em] md:tracking-widest hover:bg-slate-100 transition-colors">
                 VER COLEÇÃO
               </button>
             </div>
             {/* Copyright */}
-            <div className="flex flex-wrap items-center justify-between px-8 md:px-16 pb-5 gap-3">
-              <p className="text-[10px] font-sans text-slate-700 tracking-widest uppercase">
+            <div className="flex flex-col md:flex-row items-center md:justify-between px-5 md:px-16 pb-5 gap-2 md:gap-3 text-center md:text-left">
+              <p className="text-[9px] md:text-[10px] font-sans text-slate-700 tracking-widest uppercase">
                 © 2026 AEROSTRIKE. PROJETADA PARA A GRANDEZA.
               </p>
               <a
                 href="https://volna.today"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[10px] font-sans text-slate-700 tracking-widest uppercase hover:text-slate-400 transition-colors"
+                className="text-[9px] md:text-[10px] font-sans text-slate-700 tracking-widest uppercase hover:text-slate-400 transition-colors"
               >
                 Desenvolvido por Volna Inteligência Criativa
               </a>

@@ -238,10 +238,18 @@ export default function Scene({
   useGSAP(() => {
     if (!ballRef.current || !containerRef.current) return;
 
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const sideX = isMobile ? 1.45 : 2.5;
+    const textureScale = isMobile ? 1.35 : 1.7;
+    const aeroScale = isMobile ? 1.18 : 1.5;
+    const centerScale = isMobile ? 0.82 : 0.95;
+    const championY = isMobile ? -0.42 : -0.3;
+    const initialScale = isMobile ? 0.72 : 0.85;
+
     // Initial setup (Centered for Hero)
     gsap.set(ballRef.current.position, { x: 0, y: 0, z: 0 });
     gsap.set(ballRef.current.rotation, { x: 0, y: 0, z: 0 });
-    gsap.set(ballRef.current.scale, { x: 0.85, y: 0.85, z: 0.85 });
+    gsap.set(ballRef.current.scale, { x: initialScale, y: initialScale, z: initialScale });
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -273,15 +281,15 @@ export default function Scene({
 
     // Section 1 to 2 (Hero -> Texture)
     tl.to(ballRef.current.position, {
-      x: 2.5,
+      x: sideX,
       z: 0, 
       duration: textureSection,
       ease: "power2.inOut"
     }, 0)
     .to(ballRef.current.scale, {
-      x: 1.7,
-      y: 1.7,
-      z: 1.7,
+      x: textureScale,
+      y: textureScale,
+      z: textureScale,
       duration: textureSection,
       ease: "power2.inOut"
     }, 0)
@@ -294,15 +302,15 @@ export default function Scene({
 
     // HOLD at section 2 — keep the ball on the right until the next section is near
     tl.to(ballRef.current.position, {
-      x: 2.5,
+      x: sideX,
       z: 0,
       duration: textureSectionHold,
       ease: "none"
     }, textureSection)
     .to(ballRef.current.scale, {
-      x: 1.7,
-      y: 1.7,
-      z: 1.7,
+      x: textureScale,
+      y: textureScale,
+      z: textureScale,
       duration: textureSectionHold,
       ease: "none"
     }, textureSection)
@@ -315,15 +323,15 @@ export default function Scene({
 
     // Section 2 to 3 (Texture -> Aero)
     tl.to(ballRef.current.position, {
-      x: -2.5,
+      x: -sideX,
       z: 0, 
       duration: textureSectionHandoff,
       ease: "power2.inOut"
     }, textureHandoffStart)
     .to(ballRef.current.scale, {
-      x: 1.5,
-      y: 1.5,
-      z: 1.5,
+      x: aeroScale,
+      y: aeroScale,
+      z: aeroScale,
       duration: textureSectionHandoff,
       ease: "power2.inOut"
     }, textureHandoffStart)
@@ -337,15 +345,15 @@ export default function Scene({
 
     // HOLD at section 3 — keep the ball on the left while the user reads Aero
     tl.to(ballRef.current.position, {
-      x: -2.5,
+      x: -sideX,
       z: 0,
       duration: aeroSectionHold,
       ease: "none"
     }, aeroSection)
     .to(ballRef.current.scale, {
-      x: 1.5,
-      y: 1.5,
-      z: 1.5,
+      x: aeroScale,
+      y: aeroScale,
+      z: aeroScale,
       duration: aeroSectionHold,
       ease: "none"
     }, aeroSection)
@@ -366,9 +374,9 @@ export default function Scene({
       ease: "power2.inOut"
     }, aeroHandoffStart)
     .to(ballRef.current.scale, {
-      x: 0.95,
-      y: 0.95,
-      z: 0.95,
+      x: centerScale,
+      y: centerScale,
+      z: centerScale,
       duration: aeroSectionHandoff,
       ease: "power2.inOut"
     }, aeroHandoffStart)
@@ -387,7 +395,7 @@ export default function Scene({
       ease: "none",
     }, radarSection)
     .to(ballRef.current.scale, {
-      x: 0.95, y: 0.95, z: 0.95,
+      x: centerScale, y: centerScale, z: centerScale,
       duration: radarSectionHold,
       ease: "none",
     }, radarSection)
@@ -400,15 +408,15 @@ export default function Scene({
     // Section 4 to 5 (Radar -> Champion — ball floats above podium, final position)
     tl.to(ballRef.current.position, {
       x: 0,
-      y: -0.3,
+      y: championY,
       z: 0,
       duration: radarSectionHandoff,
       ease: "power2.inOut"
     }, radarHandoffStart)
     .to(ballRef.current.scale, {
-      x: 0.95,
-      y: 0.95,
-      z: 0.95,
+      x: centerScale,
+      y: centerScale,
+      z: centerScale,
       duration: radarSectionHandoff,
       ease: "power2.inOut"
     }, radarHandoffStart)
@@ -422,12 +430,12 @@ export default function Scene({
 
     // HOLD — ball stays frozen here through rest of page (final position)
     tl.to(ballRef.current.position, {
-      x: 0, y: -0.3, z: 0,
+      x: 0, y: championY, z: 0,
       duration: finalSection - championSection,
       ease: "none",
     }, championSection)
     .to(ballRef.current.scale, {
-      x: 0.95, y: 0.95, z: 0.95,
+      x: centerScale, y: centerScale, z: centerScale,
       duration: finalSection - championSection,
       ease: "none",
     }, championSection)
