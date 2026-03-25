@@ -356,6 +356,16 @@ export default function App() {
             </div>
           </header>
 
+          {/* Eyebrow */}
+          <div
+            data-reveal="up"
+            className="absolute top-[20%] left-1/2 -translate-x-1/2"
+          >
+            <span className="text-[10px] font-sans font-semibold tracking-[0.3em] uppercase text-slate-300 whitespace-nowrap">
+              Bola de Voley Profissional
+            </span>
+          </div>
+
           {/* Promo Video */}
           <div className="absolute left-8 md:left-12 top-1/2 -translate-y-1/2 flex items-center gap-4 pointer-events-auto cursor-pointer group">
             <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-slate-600 flex items-center justify-center group-hover:border-[#FF5A00] transition-colors">
