@@ -534,10 +534,18 @@ export default function App() {
               </button>
             </div>
             {/* Copyright */}
-            <div className="text-center pb-5">
+            <div className="flex flex-wrap items-center justify-between px-8 md:px-16 pb-5 gap-3">
               <p className="text-[10px] font-sans text-slate-700 tracking-widest uppercase">
-                © 2024 AEROSTRIKE. PROJETADA PARA A GRANDEZA.
+                © 2026 AEROSTRIKE. PROJETADA PARA A GRANDEZA.
               </p>
+              <a
+                href="https://volna.today"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] font-sans text-slate-700 tracking-widest uppercase hover:text-slate-400 transition-colors"
+              >
+                Desenvolvido por Volna Inteligência Criativa
+              </a>
             </div>
           </div>
         </section>
