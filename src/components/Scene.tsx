@@ -8,44 +8,60 @@ import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Simple hash for pseudo-random noise
+function hash(x: number, y: number) {
+  let h = x * 374761393 + y * 668265263;
+  h = (h ^ (h >> 13)) * 1274126177;
+  return ((h ^ (h >> 16)) >>> 0) / 4294967296;
+}
+
 // Procedural texture generator for the Volleyball
 function useVolleyballTextures() {
   return useMemo(() => {
-    const width = 1024;
-    const height = 512;
-    
+    const width = 2048;
+    const height = 1024;
+
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
     const ctx = canvas.getContext('2d');
-    
+
     const bumpCanvas = document.createElement('canvas');
     bumpCanvas.width = width;
     bumpCanvas.height = height;
     const bumpCtx = bumpCanvas.getContext('2d');
 
-    if (ctx && bumpCtx) {
+    const roughCanvas = document.createElement('canvas');
+    roughCanvas.width = width;
+    roughCanvas.height = height;
+    const roughCtx = roughCanvas.getContext('2d');
+
+    if (ctx && bumpCtx && roughCtx) {
       const imgData = ctx.createImageData(width, height);
       const bumpData = bumpCtx.createImageData(width, height);
-      
-      const cBlue = [37, 99, 235]; // #2563EB
-      const cYellow = [255, 215, 0]; // #FFD700
-      const cWhite = [248, 250, 252]; // #F8FAFC
-      const cSeam = [15, 23, 42]; // #0F172A
+      const roughData = roughCtx.createImageData(width, height);
+
+      const cBlue = [37, 99, 235];
+      const cYellow = [255, 215, 0];
+      const cWhite = [248, 250, 252];
+      const cSeam = [15, 23, 42];
+
+      // Pebble grid parameters
+      const pebbleSpacing = 6;
+      const pebbleRadius = 2.2;
 
       for (let py = 0; py < height; py++) {
         for (let px = 0; px < width; px++) {
-          // UV to spherical coordinates
           const u = px / width;
           const v = py / height;
-          
+
           const theta = u * 2 * Math.PI;
           const phi = (v - 0.5) * Math.PI;
-          
+
           const x = Math.cos(phi) * Math.cos(theta);
           const y = Math.sin(phi);
           const z = Math.cos(phi) * Math.sin(theta);
-          
+
           const ax = Math.abs(x);
           const ay = Math.abs(y);
           const az = Math.abs(z);
@@ -65,7 +81,6 @@ function useVolleyballTextures() {
           else if (splitVal > 0.3333) panel = 2;
 
           let color = cWhite;
-          // Match the classic 18-panel volleyball pattern
           if (face === 0) color = panel === 1 ? cYellow : cBlue;
           else if (face === 1) color = panel === 1 ? cWhite : cYellow;
           else color = panel === 1 ? cBlue : cWhite;
@@ -75,48 +90,63 @@ function useVolleyballTextures() {
           const dEdgeZ = Math.abs(az - ax) * 0.707106;
           let dSeam = Math.min(dEdgeX, dEdgeY, dEdgeZ);
 
-          if (face === 0) {
-            dSeam = Math.min(dSeam, Math.abs(Math.abs(z) - ax * 0.3333) * 0.94868);
-          } else if (face === 1) {
-            dSeam = Math.min(dSeam, Math.abs(Math.abs(x) - ay * 0.3333) * 0.94868);
-          } else {
-            dSeam = Math.min(dSeam, Math.abs(Math.abs(y) - az * 0.3333) * 0.94868);
-          }
+          if (face === 0) dSeam = Math.min(dSeam, Math.abs(Math.abs(z) - ax * 0.3333) * 0.94868);
+          else if (face === 1) dSeam = Math.min(dSeam, Math.abs(Math.abs(x) - ay * 0.3333) * 0.94868);
+          else dSeam = Math.min(dSeam, Math.abs(Math.abs(y) - az * 0.3333) * 0.94868);
 
-          // Anti-aliased seam
           const seamThickness = 0.012;
           const blend = Math.max(0, Math.min(1, (dSeam - seamThickness) / 0.005));
-          
+
+          // --- Pebble / grain pattern ---
+          // Hex-offset grid for organic pebble placement
+          const row = Math.floor(py / pebbleSpacing);
+          const offsetX = (row % 2) * (pebbleSpacing * 0.5);
+          const cellX = Math.floor((px + offsetX) / pebbleSpacing);
+          const cellY = row;
+          // Jitter the pebble center for organic look
+          const jx = hash(cellX, cellY) * pebbleSpacing * 0.4;
+          const jy = hash(cellX + 9999, cellY + 7777) * pebbleSpacing * 0.4;
+          const cx = cellX * pebbleSpacing - offsetX + pebbleSpacing * 0.5 + jx;
+          const cy = cellY * pebbleSpacing + pebbleSpacing * 0.5 + jy;
+          const dist = Math.sqrt((px - cx) ** 2 + (py - cy) ** 2);
+
+          // Smooth pebble bump: 1 at center, 0 at edge
+          const pebbleBump = Math.max(0, 1.0 - (dist / pebbleRadius));
+          const pebbleShape = pebbleBump * pebbleBump * (3 - 2 * pebbleBump); // smoothstep
+
+          // Fine grain noise per pixel
+          const grain = (hash(px, py) - 0.5) * 0.12;
+
+          // --- Color map: base color + subtle grain variation ---
+          const grainColor = grain * 30;
           const idx = (py * width + px) * 4;
-          imgData.data[idx] = cSeam[0] * (1 - blend) + color[0] * blend;
-          imgData.data[idx+1] = cSeam[1] * (1 - blend) + color[1] * blend;
-          imgData.data[idx+2] = cSeam[2] * (1 - blend) + color[2] * blend;
+          imgData.data[idx]   = Math.max(0, Math.min(255, (cSeam[0] * (1 - blend) + color[0] * blend) + grainColor));
+          imgData.data[idx+1] = Math.max(0, Math.min(255, (cSeam[1] * (1 - blend) + color[1] * blend) + grainColor));
+          imgData.data[idx+2] = Math.max(0, Math.min(255, (cSeam[2] * (1 - blend) + color[2] * blend) + grainColor));
           imgData.data[idx+3] = 255;
 
-          // Bump map: seams are dark, panels are white
-          const bumpVal = blend * 255;
-          bumpData.data[idx] = bumpVal;
-          bumpData.data[idx+1] = bumpVal;
-          bumpData.data[idx+2] = bumpVal;
+          // --- Bump map: seam depth + pebble bumps + fine noise ---
+          const seamBump = blend;
+          const pebbleContrib = pebbleShape * 0.45;
+          const noiseFine = grain * 0.3;
+          const bumpVal = Math.max(0, Math.min(1, seamBump * (0.5 + pebbleContrib + noiseFine)));
+          bumpData.data[idx]   = bumpVal * 255;
+          bumpData.data[idx+1] = bumpVal * 255;
+          bumpData.data[idx+2] = bumpVal * 255;
           bumpData.data[idx+3] = 255;
+
+          // --- Roughness map: pebble peaks are slightly smoother, valleys rougher ---
+          const roughVal = 0.72 - pebbleShape * 0.15 + (hash(px + 3333, py + 5555) - 0.5) * 0.08;
+          roughData.data[idx]   = Math.max(0, Math.min(255, roughVal * 255));
+          roughData.data[idx+1] = roughData.data[idx];
+          roughData.data[idx+2] = roughData.data[idx];
+          roughData.data[idx+3] = 255;
         }
       }
-      
+
       ctx.putImageData(imgData, 0, 0);
       bumpCtx.putImageData(bumpData, 0, 0);
-
-      // Add micro-texture (dimples) to bump map
-      bumpCtx.globalCompositeOperation = 'multiply';
-      bumpCtx.fillStyle = 'rgba(200, 200, 200, 1)';
-      for (let i = 0; i < 150000; i++) {
-        const px = Math.random() * width;
-        const py = Math.random() * height;
-        const r = Math.random() * 0.5 + 0.1;
-        bumpCtx.beginPath();
-        bumpCtx.arc(px, py, r, 0, Math.PI * 2);
-        bumpCtx.fill();
-      }
-      bumpCtx.globalCompositeOperation = 'source-over';
+      roughCtx.putImageData(roughData, 0, 0);
     }
 
     const colorMap = new THREE.CanvasTexture(canvas);
@@ -130,18 +160,32 @@ function useVolleyballTextures() {
     bumpMap.wrapT = THREE.RepeatWrapping;
     bumpMap.anisotropy = 16;
 
-    return { colorMap, bumpMap };
+    const roughnessMap = new THREE.CanvasTexture(roughCanvas);
+    roughnessMap.wrapS = THREE.RepeatWrapping;
+    roughnessMap.wrapT = THREE.RepeatWrapping;
+    roughnessMap.anisotropy = 16;
+
+    return { colorMap, bumpMap, roughnessMap };
   }, []);
 }
 
-export default function Scene({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) {
+export default function Scene({
+  containerRef,
+  section5Ref,
+  section6Ref,
+}: {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  section5Ref: React.RefObject<HTMLElement | null>;
+  section6Ref: React.RefObject<HTMLElement | null>;
+}) {
   const ballRef = useRef<THREE.Group>(null);
   const innerBallRef = useRef<THREE.Group>(null);
   const textures = useVolleyballTextures();
+  const rotSpeedObj = useRef({ value: 0.2 });
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (innerBallRef.current) {
-      innerBallRef.current.rotation.y += delta * 0.2;
+      innerBallRef.current.rotation.y += delta * rotSpeedObj.current.value;
       innerBallRef.current.rotation.x += delta * 0.05;
     }
   });
@@ -200,27 +244,105 @@ export default function Scene({ containerRef }: { containerRef: React.RefObject<
       ease: "power2.inOut"
     }, 1);
 
-    // Section 3 to 4 (Aero -> CTA)
+    // Section 3 to 4 (Aero -> Radar — ball centers)
     tl.to(ballRef.current.position, {
       x: 0,
-      y: 0.5,
-      z: 0, 
+      y: 0,
+      z: 0,
       ease: "power2.inOut"
     }, 2)
     .to(ballRef.current.scale, {
-      x: 1.2,
-      y: 1.2,
-      z: 1.2,
+      x: 0.95,
+      y: 0.95,
+      z: 0.95,
       ease: "power2.inOut"
     }, 2)
     .to(ballRef.current.rotation, {
       x: -0.2,
-      y: Math.PI * 4.2, // Final heroic pose
+      y: Math.PI * 4.2,
       z: 0.1,
       ease: "power2.inOut"
     }, 2);
 
-  }, { dependencies: [containerRef], scope: containerRef });
+    // HOLD at section 4 — ball stays anchored at center while user reads radar section
+    tl.to(ballRef.current.position, {
+      x: 0, y: 0, z: 0,
+      duration: 1.5,
+      ease: "none",
+    }, 2.5)
+    .to(ballRef.current.scale, {
+      x: 0.95, y: 0.95, z: 0.95,
+      duration: 1.5,
+      ease: "none",
+    }, 2.5)
+    .to(ballRef.current.rotation, {
+      x: -0.2, y: Math.PI * 4.2, z: 0.1,
+      duration: 1.5,
+      ease: "none",
+    }, 2.5);
+
+    // Section 4 to 5 (Radar -> Champion — ball floats above podium, final position)
+    tl.to(ballRef.current.position, {
+      x: 0,
+      y: -0.3,
+      z: 0,
+      ease: "power2.inOut"
+    }, 4.0)
+    .to(ballRef.current.scale, {
+      x: 0.95,
+      y: 0.95,
+      z: 0.95,
+      ease: "power2.inOut"
+    }, 4.0)
+    .to(ballRef.current.rotation, {
+      x: 0,
+      y: Math.PI * 6,
+      z: 0,
+      ease: "power2.inOut"
+    }, 4.0);
+
+    // HOLD — ball stays frozen here through rest of page (final position)
+    tl.to(ballRef.current.position, {
+      x: 0, y: -0.3, z: 0,
+      duration: 3,
+      ease: "none",
+    }, 5.0)
+    .to(ballRef.current.scale, {
+      x: 0.95, y: 0.95, z: 0.95,
+      duration: 3,
+      ease: "none",
+    }, 5.0)
+    .to(ballRef.current.rotation, {
+      x: 0, y: Math.PI * 6, z: 0,
+      duration: 3,
+      ease: "none",
+    }, 5.0);
+
+    // Burst spin when section 5 enters viewport
+    if (section5Ref.current) {
+      ScrollTrigger.create({
+        trigger: section5Ref.current,
+        start: "top 50%",
+        once: true,
+        onEnter: () => {
+          gsap.to(rotSpeedObj.current, {
+            value: 10,
+            duration: 0.35,
+            ease: "power2.in",
+            onComplete: () => {
+              gsap.to(rotSpeedObj.current, {
+                value: 0.2,
+                duration: 1.4,
+                ease: "power2.out",
+              });
+            },
+          });
+        },
+      });
+    }
+
+
+  }, { dependencies: [containerRef, section5Ref, section6Ref], scope: containerRef });
 
   return (
     <>
@@ -238,11 +360,12 @@ export default function Scene({ containerRef }: { containerRef: React.RefObject<
               <meshPhysicalMaterial
                 map={textures.colorMap}
                 bumpMap={textures.bumpMap}
-                bumpScale={0.02}
-                roughness={0.65}
-                metalness={0.1}
-                clearcoat={0.3}
-                clearcoatRoughness={0.4}
+                bumpScale={0.06}
+                roughnessMap={textures.roughnessMap}
+                roughness={0.75}
+                metalness={0.05}
+                clearcoat={0.15}
+                clearcoatRoughness={0.6}
               />
             </Sphere>
           </group>
