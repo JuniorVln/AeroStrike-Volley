@@ -4,15 +4,39 @@
  */
 
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useRef } from 'react';
+import { Suspense, useRef, useEffect } from 'react';
 import Scene from './components/Scene';
 import { Loader } from '@react-three/drei';
 import { Play, User, ShoppingBag, ChevronLeft, ChevronRight, CircleDashed, Twitter, Youtube } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const section5Ref = useRef<HTMLElement>(null);
   const section6Ref = useRef<HTMLElement>(null);
+  const canvasContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!canvasContainerRef.current || !section6Ref.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.to(canvasContainerRef.current!, {
+        yPercent: -100,
+        ease: "none",
+        scrollTrigger: {
+          trigger: section6Ref.current!,
+          start: "top bottom",
+          end: "top top",
+          scrub: true,
+        },
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <div ref={containerRef} className="relative w-full bg-[#050505] text-slate-50 font-sans overflow-x-hidden">
@@ -111,10 +135,10 @@ export default function App() {
         <div className="h-screen relative">
           <div
             className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center"
-            style={{ bottom: '-25vh', width: '100%' }}
+            style={{ bottom: '-9vh', width: '100%' }}
           >
             {/* === TOP CYLINDER === */}
-            <div style={{ width: '28vw', position: 'relative' }}>
+            <div style={{ width: '28vw', position: 'relative', zIndex: 3 }}>
               <div style={{
                 width: '100%',
                 height: '3.5vw',
@@ -153,7 +177,7 @@ export default function App() {
               }} />
             </div>
             {/* === MIDDLE CYLINDER === */}
-            <div style={{ width: '48vw', marginTop: '-2.5vw', position: 'relative' }}>
+            <div style={{ width: '48vw', marginTop: '-2.5vw', position: 'relative', zIndex: 2 }}>
               <div style={{
                 width: '100%',
                 height: '4.5vw',
@@ -186,30 +210,12 @@ export default function App() {
                 marginTop: '-2.25vw',
               }} />
             </div>
-            {/* === BASE CYLINDER === */}
-            <div style={{ width: '68vw', marginTop: '-3vw', position: 'relative' }}>
-              <div style={{
-                width: '100%',
-                height: '5vw',
-                borderRadius: '50%',
-                background: 'radial-gradient(ellipse at 50% 40%, #161616 0%, #0e0e0e 50%, #080808 100%)',
-                position: 'relative',
-                zIndex: 1,
-                border: '1px solid rgba(255,255,255,0.04)',
-              }} />
-              <div style={{
-                width: '100%',
-                height: '18vh',
-                marginTop: '-2.5vw',
-                background: 'linear-gradient(90deg, #030303 0%, #0e0e0e 15%, #141414 30%, #0f0f0f 50%, #141414 70%, #0e0e0e 85%, #030303 100%)',
-              }} />
-            </div>
           </div>
         </div>
       </div>
 
       {/* FIXED 3D CANVAS (Z-10) */}
-      <div className="fixed top-0 left-0 w-full h-screen z-10 pointer-events-none">
+      <div ref={canvasContainerRef} className="fixed top-0 left-0 w-full h-screen z-10 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
           <Suspense fallback={null}>
             <Scene containerRef={containerRef} section5Ref={section5Ref} section6Ref={section6Ref} />

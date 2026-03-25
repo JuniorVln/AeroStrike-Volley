@@ -1,6 +1,6 @@
 import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Environment, Float, Sphere } from '@react-three/drei';
+import { Environment, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -178,15 +178,60 @@ export default function Scene({
   section5Ref: React.RefObject<HTMLElement | null>;
   section6Ref: React.RefObject<HTMLElement | null>;
 }) {
+  const floatGroupRef = useRef<THREE.Group>(null);
   const ballRef = useRef<THREE.Group>(null);
   const innerBallRef = useRef<THREE.Group>(null);
   const textures = useVolleyballTextures();
   const rotSpeedObj = useRef({ value: 0.2 });
+  const floatStateRef = useRef({ enabled: true, time: 0 });
+  const freezeStateRef = useRef({
+    active: false,
+    floatPosition: new THREE.Vector3(),
+    ballPosition: new THREE.Vector3(),
+    ballRotation: new THREE.Euler(),
+    ballScale: new THREE.Vector3(1, 1, 1),
+  });
 
   useFrame((_state, delta) => {
     if (innerBallRef.current) {
       innerBallRef.current.rotation.y += delta * rotSpeedObj.current.value;
       innerBallRef.current.rotation.x += delta * 0.05;
+    }
+
+    if (floatGroupRef.current) {
+      const floatState = floatStateRef.current;
+
+      if (floatState.enabled) {
+        floatState.time += delta;
+
+        const targetX = Math.sin(floatState.time * 0.8) * 0.03;
+        const targetY = Math.sin(floatState.time * 1.6) * 0.08;
+
+        floatGroupRef.current.position.x = THREE.MathUtils.damp(
+          floatGroupRef.current.position.x,
+          targetX,
+          3.5,
+          delta
+        );
+        floatGroupRef.current.position.y = THREE.MathUtils.damp(
+          floatGroupRef.current.position.y,
+          targetY,
+          3.5,
+          delta
+        );
+      }
+    }
+
+    if (freezeStateRef.current.active) {
+      if (floatGroupRef.current) {
+        floatGroupRef.current.position.copy(freezeStateRef.current.floatPosition);
+      }
+
+      if (ballRef.current) {
+        ballRef.current.position.copy(freezeStateRef.current.ballPosition);
+        ballRef.current.rotation.copy(freezeStateRef.current.ballRotation);
+        ballRef.current.scale.copy(freezeStateRef.current.ballScale);
+      }
     }
   });
 
@@ -207,119 +252,204 @@ export default function Scene({
       }
     });
 
+    // Each section handoff uses one scroll slot, so the ball stays anchored
+    // to the active section instead of arriving too early.
+    const sectionHold = 0.65;
+    const sectionHandoff = 0.35;
+    const textureSectionHold = 0.22;
+    const textureSectionHandoff = 0.78;
+    const aeroSectionHold = 0.25;
+    const aeroSectionHandoff = 0.75;
+    const radarSectionHold = 0.92;
+    const radarSectionHandoff = 0.08;
+    const textureSection = 1;
+    const aeroSection = 2;
+    const radarSection = 3;
+    const championSection = 4;
+    const finalSection = 5;
+    const textureHandoffStart = textureSection + textureSectionHold;
+    const aeroHandoffStart = aeroSection + aeroSectionHold;
+    const radarHandoffStart = radarSection + radarSectionHold;
+
     // Section 1 to 2 (Hero -> Texture)
     tl.to(ballRef.current.position, {
       x: 2.5,
       z: 0, 
+      duration: textureSection,
       ease: "power2.inOut"
     }, 0)
     .to(ballRef.current.scale, {
       x: 1.7,
       y: 1.7,
       z: 1.7,
+      duration: textureSection,
       ease: "power2.inOut"
     }, 0)
     .to(ballRef.current.rotation, {
       x: 0.5,
       y: Math.PI * 1.5, // Rotate to show detail
+      duration: textureSection,
       ease: "power2.inOut"
     }, 0);
+
+    // HOLD at section 2 — keep the ball on the right until the next section is near
+    tl.to(ballRef.current.position, {
+      x: 2.5,
+      z: 0,
+      duration: textureSectionHold,
+      ease: "none"
+    }, textureSection)
+    .to(ballRef.current.scale, {
+      x: 1.7,
+      y: 1.7,
+      z: 1.7,
+      duration: textureSectionHold,
+      ease: "none"
+    }, textureSection)
+    .to(ballRef.current.rotation, {
+      x: 0.5,
+      y: Math.PI * 1.5,
+      duration: textureSectionHold,
+      ease: "none"
+    }, textureSection);
 
     // Section 2 to 3 (Texture -> Aero)
     tl.to(ballRef.current.position, {
       x: -2.5,
       z: 0, 
+      duration: textureSectionHandoff,
       ease: "power2.inOut"
-    }, 1)
+    }, textureHandoffStart)
     .to(ballRef.current.scale, {
       x: 1.5,
       y: 1.5,
       z: 1.5,
+      duration: textureSectionHandoff,
       ease: "power2.inOut"
-    }, 1)
+    }, textureHandoffStart)
     .to(ballRef.current.rotation, {
       x: -0.5,
       y: Math.PI * 3.5, // Fast spin
       z: -0.5,
+      duration: textureSectionHandoff,
       ease: "power2.inOut"
-    }, 1);
+    }, textureHandoffStart);
+
+    // HOLD at section 3 — keep the ball on the left while the user reads Aero
+    tl.to(ballRef.current.position, {
+      x: -2.5,
+      z: 0,
+      duration: aeroSectionHold,
+      ease: "none"
+    }, aeroSection)
+    .to(ballRef.current.scale, {
+      x: 1.5,
+      y: 1.5,
+      z: 1.5,
+      duration: aeroSectionHold,
+      ease: "none"
+    }, aeroSection)
+    .to(ballRef.current.rotation, {
+      x: -0.5,
+      y: Math.PI * 3.5,
+      z: -0.5,
+      duration: aeroSectionHold,
+      ease: "none"
+    }, aeroSection);
 
     // Section 3 to 4 (Aero -> Radar — ball centers)
     tl.to(ballRef.current.position, {
       x: 0,
       y: 0,
       z: 0,
+      duration: aeroSectionHandoff,
       ease: "power2.inOut"
-    }, 2)
+    }, aeroHandoffStart)
     .to(ballRef.current.scale, {
       x: 0.95,
       y: 0.95,
       z: 0.95,
+      duration: aeroSectionHandoff,
       ease: "power2.inOut"
-    }, 2)
+    }, aeroHandoffStart)
     .to(ballRef.current.rotation, {
       x: -0.2,
       y: Math.PI * 4.2,
       z: 0.1,
+      duration: aeroSectionHandoff,
       ease: "power2.inOut"
-    }, 2);
+    }, aeroHandoffStart);
 
     // HOLD at section 4 — ball stays anchored at center while user reads radar section
     tl.to(ballRef.current.position, {
       x: 0, y: 0, z: 0,
-      duration: 1.5,
+      duration: radarSectionHold,
       ease: "none",
-    }, 2.5)
+    }, radarSection)
     .to(ballRef.current.scale, {
       x: 0.95, y: 0.95, z: 0.95,
-      duration: 1.5,
+      duration: radarSectionHold,
       ease: "none",
-    }, 2.5)
+    }, radarSection)
     .to(ballRef.current.rotation, {
       x: -0.2, y: Math.PI * 4.2, z: 0.1,
-      duration: 1.5,
+      duration: radarSectionHold,
       ease: "none",
-    }, 2.5);
+    }, radarSection);
 
     // Section 4 to 5 (Radar -> Champion — ball floats above podium, final position)
     tl.to(ballRef.current.position, {
       x: 0,
       y: -0.3,
       z: 0,
+      duration: radarSectionHandoff,
       ease: "power2.inOut"
-    }, 4.0)
+    }, radarHandoffStart)
     .to(ballRef.current.scale, {
       x: 0.95,
       y: 0.95,
       z: 0.95,
+      duration: radarSectionHandoff,
       ease: "power2.inOut"
-    }, 4.0)
+    }, radarHandoffStart)
     .to(ballRef.current.rotation, {
       x: 0,
       y: Math.PI * 6,
       z: 0,
+      duration: radarSectionHandoff,
       ease: "power2.inOut"
-    }, 4.0);
+    }, radarHandoffStart);
 
     // HOLD — ball stays frozen here through rest of page (final position)
     tl.to(ballRef.current.position, {
       x: 0, y: -0.3, z: 0,
-      duration: 3,
+      duration: finalSection - championSection,
       ease: "none",
-    }, 5.0)
+    }, championSection)
     .to(ballRef.current.scale, {
       x: 0.95, y: 0.95, z: 0.95,
-      duration: 3,
+      duration: finalSection - championSection,
       ease: "none",
-    }, 5.0)
+    }, championSection)
     .to(ballRef.current.rotation, {
       x: 0, y: Math.PI * 6, z: 0,
-      duration: 3,
+      duration: finalSection - championSection,
       ease: "none",
-    }, 5.0);
+    }, championSection);
 
     // Burst spin when section 5 enters viewport
     if (section5Ref.current) {
+      ScrollTrigger.create({
+        trigger: section5Ref.current,
+        start: "top bottom",
+        onEnter: () => {
+          floatStateRef.current.enabled = false;
+        },
+        onLeaveBack: () => {
+          floatStateRef.current.enabled = true;
+        },
+      });
+
       ScrollTrigger.create({
         trigger: section5Ref.current,
         start: "top 50%",
@@ -341,6 +471,25 @@ export default function Scene({
       });
     }
 
+    if (section6Ref.current) {
+      ScrollTrigger.create({
+        trigger: section6Ref.current,
+        start: "top bottom",
+        onEnter: () => {
+          if (floatGroupRef.current && ballRef.current) {
+            freezeStateRef.current.active = true;
+            freezeStateRef.current.floatPosition.copy(floatGroupRef.current.position);
+            freezeStateRef.current.ballPosition.copy(ballRef.current.position);
+            freezeStateRef.current.ballRotation.copy(ballRef.current.rotation);
+            freezeStateRef.current.ballScale.copy(ballRef.current.scale);
+          }
+        },
+        onLeaveBack: () => {
+          freezeStateRef.current.active = false;
+        },
+      });
+    }
+
 
   }, { dependencies: [containerRef, section5Ref, section6Ref], scope: containerRef });
 
@@ -352,7 +501,7 @@ export default function Scene({
       <directionalLight position={[-10, -10, -5]} intensity={2} color="#00E5FF" />
       <directionalLight position={[0, 10, -10]} intensity={1} color="#EAB308" />
 
-      <Float speed={2} rotationIntensity={0.4} floatIntensity={0.5}>
+      <group ref={floatGroupRef}>
         <group ref={ballRef}>
           <group ref={innerBallRef}>
             {/* Realistic Volleyball Sphere - Reduced size to fit the layout better */}
@@ -370,7 +519,7 @@ export default function Scene({
             </Sphere>
           </group>
         </group>
-      </Float>
+      </group>
     </>
   );
 }
