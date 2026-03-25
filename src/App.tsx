@@ -18,6 +18,8 @@ export default function App() {
   const section5Ref = useRef<HTMLElement>(null);
   const section6Ref = useRef<HTMLElement>(null);
   const canvasContainerRef = useRef<HTMLDivElement>(null);
+  const outerCursorRef = useRef<HTMLDivElement>(null);
+  const innerCursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!canvasContainerRef.current || !section6Ref.current) return;
@@ -38,10 +40,118 @@ export default function App() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+    if (!outerCursorRef.current || !innerCursorRef.current) return;
+
+    const html = document.documentElement;
+    html.classList.add('custom-cursor-active');
+
+    const cursorStyleEl = document.createElement('style');
+    cursorStyleEl.setAttribute('data-custom-cursor', 'true');
+    cursorStyleEl.textContent = `
+      html.custom-cursor-active,
+      html.custom-cursor-active * {
+        cursor: none !important;
+      }
+    `;
+    document.head.appendChild(cursorStyleEl);
+
+    const outer = outerCursorRef.current;
+    const inner = innerCursorRef.current;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let outerX = mouseX;
+    let outerY = mouseY;
+    let rafId = 0;
+
+    outer.style.opacity = '0';
+    inner.style.opacity = '0';
+
+    const onMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      inner.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+      inner.style.opacity = '1';
+      outer.style.opacity = '1';
+    };
+
+    const onMouseLeave = () => {
+      inner.style.opacity = '0';
+      outer.style.opacity = '0';
+    };
+
+    const animate = () => {
+      outerX += (mouseX - outerX) * 0.14;
+      outerY += (mouseY - outerY) * 0.14;
+      outer.style.transform = `translate3d(${outerX}px, ${outerY}px, 0) translate(-50%, -50%)`;
+      rafId = window.requestAnimationFrame(animate);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseleave', onMouseLeave);
+    rafId = window.requestAnimationFrame(animate);
+
+    return () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseleave', onMouseLeave);
+      window.cancelAnimationFrame(rafId);
+      html.classList.remove('custom-cursor-active');
+      cursorStyleEl.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const ctx = gsap.context(() => {
+      const revealBlocks = gsap.utils.toArray<HTMLElement>('[data-reveal]');
+
+      revealBlocks.forEach((el, index) => {
+        const direction = el.dataset.reveal ?? 'left';
+        const fromVars =
+          direction === 'right'
+            ? { x: 72, autoAlpha: 0 }
+            : direction === 'up'
+              ? { y: 56, autoAlpha: 0 }
+              : { x: -72, autoAlpha: 0 };
+
+        gsap.fromTo(
+          el,
+          fromVars,
+          {
+            x: 0,
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.85,
+            ease: 'power3.out',
+            delay: index * 0.02,
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 88%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <div ref={containerRef} className="relative w-full bg-[#050505] text-slate-50 font-sans overflow-x-hidden">
+      <div
+        ref={outerCursorRef}
+        className="fixed top-0 left-0 z-[60] w-10 h-10 rounded-full bg-slate-400/70 border border-slate-200/20 pointer-events-none opacity-0 will-change-transform"
+      />
+      <div
+        ref={innerCursorRef}
+        className="fixed top-0 left-0 z-[61] w-3 h-3 rounded-full bg-white pointer-events-none opacity-0 will-change-transform"
+      />
+
       {/* Fixed Orange Border Frame */}
-      <div className="fixed inset-0 border-[12px] md:border-[20px] border-[#FF5A00] z-50 pointer-events-none"></div>
+      <div className="fixed inset-0 border-[12px] md:border-[20px] border-[#FF5A00] rounded-[22px] md:rounded-[34px] z-50 pointer-events-none"></div>
 
       {/* PREMIUM BACKGROUND (Z-0) */}
       <div className="fixed inset-0 z-0 pointer-events-none">
@@ -228,7 +338,7 @@ export default function App() {
         {/* Section 1: Hero */}
         <section className="h-screen w-full relative">
           {/* Header */}
-          <header className="absolute top-0 left-0 w-full p-8 md:p-12 flex justify-between items-center pointer-events-auto">
+          <header data-reveal="up" className="absolute top-0 left-0 w-full p-8 md:p-12 flex justify-between items-center pointer-events-auto">
             <div className="flex items-center gap-3">
               <CircleDashed className="w-8 h-8 md:w-10 md:h-10" />
               <div className="font-oswald font-bold text-lg md:text-xl leading-none uppercase tracking-[-0.02em]">
@@ -251,11 +361,11 @@ export default function App() {
             <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-slate-600 flex items-center justify-center group-hover:border-[#FF5A00] transition-colors">
               <Play className="w-4 h-4 md:w-5 md:h-5 fill-current group-hover:text-[#FF5A00] transition-colors ml-1" />
             </div>
-            <span className="hidden md:block text-xs font-sans font-semibold text-slate-400 uppercase tracking-widest leading-relaxed">Vídeo<br/>Promo</span>
+            <span data-reveal="left" className="hidden md:block text-xs font-sans font-semibold text-slate-400 uppercase tracking-widest leading-relaxed">Vídeo<br/>Promo</span>
           </div>
 
           {/* Price & Size */}
-          <div className="absolute bottom-12 md:bottom-16 left-8 md:left-12 pointer-events-auto">
+          <div data-reveal="left" className="absolute bottom-12 md:bottom-16 left-8 md:left-12 pointer-events-auto">
             <div className="text-3xl md:text-5xl font-sans font-bold text-[#FF5A00] mb-2 tracking-tight">R$ 599,90</div>
             <div className="text-xs font-sans font-medium text-slate-400 tracking-widest uppercase">
               Tamanho: <span className="text-white font-bold">65cm</span> • Oficial
@@ -270,7 +380,7 @@ export default function App() {
           </div>
 
           {/* Arrows */}
-          <div className="absolute bottom-12 md:bottom-16 right-8 md:right-12 flex gap-4 pointer-events-auto">
+          <div data-reveal="right" className="absolute bottom-12 md:bottom-16 right-8 md:right-12 flex gap-4 pointer-events-auto">
             <button className="w-12 h-12 md:w-14 md:h-14 rounded-full border border-slate-600 flex items-center justify-center hover:border-white transition-colors">
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -287,7 +397,7 @@ export default function App() {
 
         {/* Section 2: Texture */}
         <section className="min-h-screen flex flex-col justify-center items-start text-left w-full max-w-7xl mx-auto px-8 md:px-24 pointer-events-auto">
-          <div className="w-full md:w-1/2 flex flex-col items-start">
+          <div data-reveal="left" className="w-full md:w-1/2 flex flex-col items-start">
 
             {/* Top Badge */}
             <div className="border border-slate-600 rounded-full px-4 py-1 mb-8">
@@ -332,7 +442,7 @@ export default function App() {
 
         {/* Section 3: Aerodynamics */}
         <section className="min-h-screen flex flex-col justify-center items-end text-right w-full max-w-7xl mx-auto px-8 md:px-24 pointer-events-auto">
-          <div className="w-full md:w-1/2 flex flex-col items-end">
+          <div data-reveal="right" className="w-full md:w-1/2 flex flex-col items-end">
 
             {/* Top Badge */}
             <div className="border border-slate-600 rounded-full px-4 py-1 mb-8">
@@ -382,7 +492,7 @@ export default function App() {
         <section className="h-screen relative w-full overflow-hidden pointer-events-none" id="section4">
 
           {/* Top-left: MICRO-TEXTURA + metric */}
-          <div className="absolute left-[8%] top-[28%] text-left">
+          <div data-reveal="left" className="absolute left-[8%] top-[28%] text-left">
             <div className="text-[11px] font-sans font-semibold text-slate-500 tracking-widest uppercase mb-2">MICRO-TEXTURA</div>
             <div className="flex items-center gap-3">
               <div className="w-px h-12 bg-white/70"></div>
@@ -395,21 +505,21 @@ export default function App() {
 
           {/* Center-left: PRESSÃO — aligned with MICRO-TEXTURA (left-[8%]) */}
           <div className="absolute left-[8%] top-1/2 -translate-y-1/2 text-left">
-            <div className="text-[9px] font-sans font-semibold text-slate-500 tracking-widest uppercase">PRESSÃO: 0.30 kPa</div>
+            <div data-reveal="left" className="text-[9px] font-sans font-semibold text-slate-500 tracking-widest uppercase">PRESSÃO: 0.30 kPa</div>
           </div>
 
           {/* Center-right: ROTAÇÃO — aligned with Alta-Aderência bar (right-[8%]) */}
           <div className="absolute right-[8%] top-1/2 -translate-y-1/2 text-right">
-            <div className="text-[9px] font-sans font-semibold text-slate-500 tracking-widest uppercase">ROTAÇÃO: 18 rpm</div>
+            <div data-reveal="right" className="text-[9px] font-sans font-semibold text-slate-500 tracking-widest uppercase">ROTAÇÃO: 18 rpm</div>
           </div>
 
           {/* Bottom-center: PROFUNDIDADE */}
           <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 text-center">
-            <div className="text-[9px] font-sans font-semibold text-slate-500 tracking-widest uppercase">PROFUNDIDADE DO CANAL</div>
+            <div data-reveal="up" className="text-[9px] font-sans font-semibold text-slate-500 tracking-widest uppercase">PROFUNDIDADE DO CANAL</div>
           </div>
 
           {/* Bottom-right: Alta-Aderência */}
-          <div className="absolute right-[8%] bottom-[30%] text-right">
+          <div data-reveal="right" className="absolute right-[8%] bottom-[30%] text-right">
             <div className="flex items-center justify-end gap-3">
               <div>
                 <div className="text-3xl font-sans font-bold text-white leading-none">Alta-Aderência</div>
@@ -431,36 +541,40 @@ export default function App() {
         >
           {/* Title block */}
           <div className="absolute top-14 md:top-20 left-1/2 -translate-x-1/2 text-center z-10 whitespace-nowrap">
-            <p className="text-[10px] font-sans font-semibold tracking-[0.5em] uppercase text-slate-500 mb-3">
+            <p data-reveal="up" className="text-[10px] font-sans font-semibold tracking-[0.5em] uppercase text-slate-500 mb-3">
               EDIÇÃO LIMITADA
             </p>
-            <h2 className="text-[11vw] md:text-[8vw] font-oswald font-bold uppercase leading-none tracking-tight text-white">
+            <h2 data-reveal="up" className="text-[11vw] md:text-[8vw] font-oswald font-bold uppercase leading-none tracking-tight text-white">
               A CAMPEÃ
             </h2>
           </div>
 
           {/* Left stat */}
           <div className="absolute left-[8%] top-1/2 -translate-y-1/2 text-left">
-            <div className="text-[10px] font-sans font-semibold text-[#FF5A00] tracking-widest uppercase mb-3">
-              NÍVEL 01
+            <div data-reveal="left">
+              <div className="text-[10px] font-sans font-semibold text-[#FF5A00] tracking-widest uppercase mb-3">
+                NÍVEL 01
+              </div>
+              <div className="text-2xl md:text-3xl font-sans font-bold text-white mb-3">Classe Elite</div>
+              <div className="w-10 h-px bg-slate-700 mb-4" />
+              <p className="text-xs font-sans text-slate-400 leading-relaxed max-w-[160px]">
+                Projetada para o mais alto nível de competição.
+              </p>
             </div>
-            <div className="text-2xl md:text-3xl font-sans font-bold text-white mb-3">Classe Elite</div>
-            <div className="w-10 h-px bg-slate-700 mb-4" />
-            <p className="text-xs font-sans text-slate-400 leading-relaxed max-w-[160px]">
-              Projetada para o mais alto nível de competição.
-            </p>
           </div>
 
           {/* Right stat */}
           <div className="absolute right-[8%] top-1/2 -translate-y-1/2 text-right">
-            <div className="text-[10px] font-sans font-semibold text-[#FF5A00] tracking-widest uppercase mb-3">
-              CERTIFICADA
+            <div data-reveal="right">
+              <div className="text-[10px] font-sans font-semibold text-[#FF5A00] tracking-widest uppercase mb-3">
+                CERTIFICADA
+              </div>
+              <div className="text-2xl md:text-3xl font-sans font-bold text-white mb-3">Padrão Ouro</div>
+              <div className="w-10 h-px bg-slate-700 mb-4 ml-auto" />
+              <p className="text-xs font-sans text-slate-400 leading-relaxed max-w-[160px] ml-auto text-right">
+                Atende todas as exigências oficiais de peso e tamanho.
+              </p>
             </div>
-            <div className="text-2xl md:text-3xl font-sans font-bold text-white mb-3">Padrão Ouro</div>
-            <div className="w-10 h-px bg-slate-700 mb-4 ml-auto" />
-            <p className="text-xs font-sans text-slate-400 leading-relaxed max-w-[160px] ml-auto text-right">
-              Atende todas as exigências oficiais de peso e tamanho.
-            </p>
           </div>
 
         </section>
@@ -473,7 +587,7 @@ export default function App() {
           {/* === MAIN TEXT === */}
           <div className="absolute top-[12%] left-1/2 -translate-x-1/2 text-center w-full flex flex-col items-center">
             {/* Badge */}
-            <div className="inline-flex items-center border border-[#FF5A00]/60 rounded-full px-6 py-[7px] mb-10">
+            <div data-reveal="up" className="inline-flex items-center border border-[#FF5A00]/60 rounded-full px-6 py-[7px] mb-10">
               <span className="text-[9px] font-sans font-semibold tracking-[0.5em] uppercase text-[#FF5A00]">
                 PERFORMANCE DO PRÓXIMO NÍVEL
               </span>
@@ -481,6 +595,7 @@ export default function App() {
             {/* DESAFIE */}
             <div
               className="font-oswald font-bold uppercase leading-none tracking-[0.08em] select-none text-slate-700"
+              data-reveal="up"
               style={{ fontSize: 'clamp(32px, 5vw, 72px)' }}
             >
               DESAFIE
@@ -488,13 +603,14 @@ export default function App() {
             {/* A GRAVIDADE. */}
             <div
               className="font-oswald font-bold uppercase leading-none tracking-[-0.02em] select-none mt-1"
+              data-reveal="up"
               style={{ fontSize: 'clamp(48px, 8vw, 120px)', color: '#ffffff' }}
             >
               A GRAVIDADE<span style={{ color: '#FF5A00' }}>.</span>
             </div>
             {/* Subtitle */}
             <div className="w-12 h-px bg-slate-700 mt-8 mb-6" />
-            <p className="text-xs md:text-sm font-sans text-slate-500 tracking-wide max-w-md leading-relaxed">
+            <p data-reveal="up" className="text-xs md:text-sm font-sans text-slate-500 tracking-wide max-w-md leading-relaxed">
               Engenharia de precisão para atletas que não aceitam limites.
             </p>
           </div>
